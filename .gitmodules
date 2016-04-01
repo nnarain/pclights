@@ -1,0 +1,3 @@
+[submodule "firmware/external/stdperiph"]
+	path = firmware/external/stdperiph
+	url = https://github.com/nnarain/stdperiph.git
