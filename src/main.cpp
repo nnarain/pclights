@@ -10,11 +10,10 @@ int main()
 {
 	registerLogger<ConsoleLogger>();
 
-	for(int i = 0; i < 5; ++i)
-	{
-		log(Level::INFO, "Hello World\n", 12);
-	}
-
+	LOG_INFO("Test info message\n");
+	LOG_DEBUG("Test debug message\n");
+	LOG_WARN("Test warn message\n");
+	LOG_ERROR("Test error message\n");
 
 	releaseLoggers();
 	return 0;
