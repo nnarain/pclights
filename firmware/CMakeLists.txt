@@ -11,6 +11,7 @@ project(pclights-firmware)
 include_directories(
 	include/
 	${EXTERNAL_DIR}/stdperiph/include/
+	${EXTERNAL_DIR}/WS2812-driver/include/
 )
 
 add_definitions(-DF_CPU=16000000)
