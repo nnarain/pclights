@@ -7,3 +7,6 @@
 [submodule "external/simplelogger"]
 	path = external/simplelogger
 	url = https://github.com/nnarain/simplelogger.git
+[submodule "external/serial-messages"]
+	path = external/serial-messages
+	url = https://github.com/nnarain/serial-messages.git

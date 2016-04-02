@@ -4,6 +4,8 @@
 #include <simplelogger/simplelogger.h>
 #include <simplelogger/logger/console_logger.h>
 
+#include <serialmessages/message_base.h>
+
 using namespace simplelogger;
 
 int main()

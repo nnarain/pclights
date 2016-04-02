@@ -12,6 +12,7 @@ set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-std=c++11")
 include_directories(
 	include/
 	${EXTERNAL_SOURCE_DIR}/simplelogger/include/
+	${EXTERNAL_SOURCE_DIR}/serial-messages/include/
 )
 
 link_directories(
