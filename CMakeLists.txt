@@ -5,8 +5,46 @@ project(pclights)
 
 find_package(Boost REQUIRED)
 
+set(EXTERNAL_SOURCE_DIR "${CMAKE_SOURCE_DIR}/external")
+
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-std=c++11")
+
+include_directories(
+	include/
+	${EXTERNAL_SOURCE_DIR}/simplelogger/include/
+)
+
+link_directories(
+	${CMAKE_BINARY_DIR}/simplelogger	
+)
+
 add_executable(${PROJECT_NAME}
 	src/main.cpp
+)
+
+# Build external libraries and Projects
+
+include(ExternalProject)
+
+# build logger
+ExternalProject_Add(
+	simplelogger-external
+
+	URL "external/simplelogger"
+
+	SOURCE_DIR "${CMAKE_SOURCE_DIR}/external/simplelogger"
+	BINARY_DIR "${CMAKE_BINARY_DIR}/simplelogger"
+
+	DOWNLOAD_COMMAND ""
+	INSTALL_COMMAND  ""
+)
+
+add_dependencies(${PROJECT_NAME}
+	simplelogger-external
+)
+
+target_link_libraries(${PROJECT_NAME}
+	simplelogger
 )
 
 # build firmware project
@@ -15,8 +53,6 @@ if(NOT BUILD_FIRMWARE)
 endif(NOT BUILD_FIRMWARE)
 
 if(BUILD_FIRMWARE STREQUAL "true")
-
-	include(ExternalProject)
 
 	ExternalProject_Add(
 		firmware
@@ -32,6 +68,8 @@ if(BUILD_FIRMWARE STREQUAL "true")
 		INSTALL_COMMAND ""
 
 		CMAKE_ARGS
+			"-DEXTERNAL_COMMON_DIR=${EXTERNAL_SOURCE_DIR}"
+
 			"-DAVR_UPLOAD_PORT=/dev/ttyACM0"
 			"-DAVR_UPLOAD_BAUD=115200"
 	)
