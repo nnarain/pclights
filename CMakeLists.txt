@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 
 project(pclights)
 
-find_package(Boost REQUIRED)
+find_package(Boost REQUIRED system program_options)
 
 set(EXTERNAL_SOURCE_DIR "${CMAKE_SOURCE_DIR}/external")
 
@@ -13,6 +13,8 @@ include_directories(
 	include/
 	${EXTERNAL_SOURCE_DIR}/simplelogger/include/
 	${EXTERNAL_SOURCE_DIR}/serial-messages/include/
+
+	${Boost_INCLUDE_DIR}
 )
 
 link_directories(
@@ -46,6 +48,7 @@ add_dependencies(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
 	simplelogger
+	${Boost_LIBRARIES}
 )
 
 # build firmware project
