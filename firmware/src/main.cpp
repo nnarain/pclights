@@ -6,37 +6,32 @@
 
 #include <WS2812/Ws2812Driver.h>
 
-#define RED   0xFF0000
-#define GREEN 0x00FF00
-#define BLUE  0x0000FF
+#include <serialmessages/message_client.h>
+
+#include "serial.h"
 
 GPIO(PORTB, DDRB, GpioB);
 
 typedef Ws2812Driver<GpioB, 5, 60> LedsDriver;
+
+using namespace serialmessages;
 
 int main()
 {
 	LedsDriver leds;
 	leds.begin();
 
-	uint32_t colors[] = { RED, RED | GREEN, GREEN, GREEN | BLUE, BLUE, BLUE | RED };
-	int colors_len = 6;
+	MessageClient<Serial> client(9600);
 
-	leds.clear();
-	leds.show();
+	client.initialize();
 
 	for(;;)
 	{
-		for(int i = 0; i < colors_len; ++i)
-		{
-			for(int j = 0; j < LedsDriver::NUM_LEDS; ++j)
-			{
-				leds.setPixel(j, colors[i]);
-				leds.show();
-				_delay_ms(100);
-			}
-		}
+		client.spinOnce();
 	}
 
 	return 0;
 }
+
+
+

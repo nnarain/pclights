@@ -52,8 +52,6 @@ public:
 
 		for(auto i = 0; i < nbytes; ++i)
 		{
-/*			if(buffer_[read_idx_] != 0)
-				LOG_DEBUG("R: %c", buffer_[read_idx_]);*/
 			data[i] = buffer_[read_idx_];
 			read_idx_ = (read_idx_ + 1) % size_;
 		}
@@ -74,7 +72,6 @@ public:
 private:
 	void readHandler(const boost::system::error_code &error, std::size_t bytes_transferred)
 	{
-		static int count = 0;
 		boost::mutex::scoped_lock lock(buffer_mutex_);
 
 		if(!error)
@@ -82,18 +79,12 @@ private:
 			// copy read bytes into the main buffer
 			for(auto i = 0; i < bytes_transferred; ++i)
 			{
-/*				if(read_buffer_[i] != 0)
-					LOG_DEBUG("W: %c", read_buffer_[i]);*/
 				buffer_[write_idx_] = read_buffer_[i];
 				write_idx_ = (write_idx_ + 1) % size_;
 			}
 
 			bytes_available_ +=  bytes_transferred;
 		}
-
-		count++;
-		if(count < 20)
-			beginRead();
 	}
 
 private:
