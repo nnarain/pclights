@@ -6,44 +6,32 @@
 
 #include <WS2812/Ws2812Driver.h>
 
-#include "sci.h"
+#include <serialmessages/message_client.h>
 
-#define BAUD_RATE(baud) ((F_CPU / 16 / (baud))-1)
+#include "serial.h"
 
 GPIO(PORTB, DDRB, GpioB);
 
 typedef Ws2812Driver<GpioB, 5, 60> LedsDriver;
 
-void initSci();
+using namespace serialmessages;
 
 int main()
 {
 	LedsDriver leds;
 	leds.begin();
 
-	initSci();
+	MessageClient<Serial> client(9600);
+
+	client.initialize();
 
 	for(;;)
 	{
-		char c = sci::getc();
-		sci::putc(c);
+		client.spinOnce();
 	}
 
 	return 0;
 }
 
-void initSci()
-{
-	// enable rx and tx
-	sci::rx_enable::set();
-	sci::tx_enable::set();
-
-	// frame format
-	sci::frame_format::write(sci::frame_options::DATA8);
-	sci::stop_bits_1::set();
-
-	// set baud rate
-	sci::baud::write((uint16_t)BAUD_RATE(9600));
-}
 
 
