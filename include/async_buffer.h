@@ -4,6 +4,11 @@
 
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
+#include <boost/thread.hpp>
+
+#include <simplelogger/simplelogger.h>
+
+#include <vector>
 
 class AsyncBuffer
 {
@@ -14,33 +19,46 @@ public:
 		serial_(nullptr),
 		size_(size),
 		write_idx_(0),
+		read_idx_(0),
 		read_buffer_(0),
-		bytes_available_(0),
-		read_handler_(this)
+		bytes_available_(0)
 	{
-		buffer_ = new uint8_t[size];
-		read_buffer_ = new uint8_t[size];
+		buffer_.resize(size);
+		read_buffer_.resize(size);
 	}
 
 	~AsyncBuffer()
 	{
-		delete[] buffer_;
-		delete[] read_buffer_;
 	}
 
 	void beginRead()
 	{
 		if(serial_ != nullptr)
-			serial_->async_read_some(boost::asio::buffer(buffer_, size_), read_handler_);
+		{
+			serial_->async_read_some(
+				boost::asio::buffer(&read_buffer_[0], size_),
+				boost::bind(
+					&AsyncBuffer::readHandler, this,
+					boost::asio::placeholders::error,
+					boost::asio::placeholders::bytes_transferred
+				)
+			);
+		}
 	}
 
-	void read(uint8_t* data, size_t len)
+	void read(uint8_t* data, size_t nbytes)
 	{
-		for(auto i = 0; i < len; ++i)
+		boost::mutex::scoped_lock lock(buffer_mutex_);
+
+		for(auto i = 0; i < nbytes; ++i)
 		{
+/*			if(buffer_[read_idx_] != 0)
+				LOG_DEBUG("R: %c", buffer_[read_idx_]);*/
 			data[i] = buffer_[read_idx_];
-			read_idx_ += (read_idx_ + 1) % size_;
+			read_idx_ = (read_idx_ + 1) % size_;
 		}
+
+		bytes_available_ -= nbytes;
 	}
 
 	size_t available()
@@ -56,52 +74,42 @@ public:
 private:
 	void readHandler(const boost::system::error_code &error, std::size_t bytes_transferred)
 	{
+		static int count = 0;
+		boost::mutex::scoped_lock lock(buffer_mutex_);
+
 		if(!error)
 		{
 			// copy read bytes into the main buffer
 			for(auto i = 0; i < bytes_transferred; ++i)
 			{
+/*				if(read_buffer_[i] != 0)
+					LOG_DEBUG("W: %c", read_buffer_[i]);*/
 				buffer_[write_idx_] = read_buffer_[i];
-				write_idx_ += (write_idx_ + 1) % size_;
+				write_idx_ = (write_idx_ + 1) % size_;
 			}
 
-			bytes_available_ = write_idx_ - read_idx_;
+			bytes_available_ +=  bytes_transferred;
 		}
 
-		beginRead();
+		count++;
+		if(count < 20)
+			beginRead();
 	}
-
-private: 
-	struct ReadHandler
-	{
-		AsyncBuffer* buffer;
-
-		ReadHandler(AsyncBuffer* buffer) : buffer(buffer)
-		{
-
-		}
-
-		void operator()(const boost::system::error_code& error, std::size_t bytes_transferred)
-		{
-			buffer->readHandler(error, bytes_transferred);
-		}
-	};
-
-	friend ReadHandler;
 
 private:
 	boost::asio::serial_port * serial_;
 
-	uint8_t* buffer_;
-	uint8_t* read_buffer_;
+	std::vector<uint8_t> buffer_;
+	std::vector<uint8_t> read_buffer_;
+
+	boost::mutex buffer_mutex_;
+
 	const size_t size_;
 
-	size_t write_idx_;
-	size_t read_idx_;
+	volatile size_t write_idx_;
+	volatile size_t read_idx_;
 
-	size_t bytes_available_;
-
-	ReadHandler read_handler_;
+	volatile size_t bytes_available_;	
 };
 
 #endif // ASYNC_BUFFER_H

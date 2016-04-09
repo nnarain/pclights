@@ -11,6 +11,9 @@
 
 #include <boost/asio.hpp>
 #include <boost/program_options.hpp>
+#include <boost/thread.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/bind.hpp>
 
 using namespace simplelogger;
 using namespace serialmessages;
@@ -55,17 +58,28 @@ int main(int argc, char * argv[])
 	port = vm["port"].as<std::string>();
 	baud = vm["baud"].as<size_t>();
 
+	//
+	
 	boost::asio::io_service io_service;
 
 	MessageServer<Serial> server(io_service, port, baud);
 
 	LOG_INFO("Initializing message server on port %s", port.c_str());
-	server.initialize();
+	if(!server.initialize())
+	{
+		LOG_ERROR("Failed to initialize message server");
+		return 1;
+	}
+
+	LOG_INFO("Start IO Service thread");
+	boost::thread io_thread(boost::bind(&boost::asio::io_service::run, &io_service));
 
 	while(true)
 	{
 		server.spinOnce();
 	}
+
+	io_thread.join();
 
 	releaseLoggers();
 	return 0;
