@@ -35,6 +35,10 @@ public:
 
 			// set options
 			serial_.set_option(baud_);
+			serial_.set_option(serial_port_base::character_size(8));
+			serial_.set_option(serial_port_base::stop_bits(serial_port_base::stop_bits::one));
+			serial_.set_option(serial_port_base::parity(serial_port_base::parity::none));
+			serial_.set_option(serial_port_base::flow_control(serial_port_base::flow_control::none));
 
 			// start reading from serial port
 			buffer_.setSerialPort(serial_);
@@ -83,6 +87,10 @@ private:
 	{
 		// nothing...
 	}
+
+private:
+
+	typedef boost::asio::serial_port_base serial_port_base;
 
 	boost::asio::serial_port serial_;
 	std::string port_;

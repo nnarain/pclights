@@ -85,6 +85,8 @@ private:
 
 			bytes_available_ +=  bytes_transferred;
 		}
+
+		beginRead();
 	}
 
 private:

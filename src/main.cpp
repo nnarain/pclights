@@ -71,7 +71,7 @@ int main(int argc, char * argv[])
 		return 1;
 	}
 
-	LOG_INFO("Start IO Service thread");
+	LOG_INFO("Starting IO Service Thread");
 	boost::thread io_thread(boost::bind(&boost::asio::io_service::run, &io_service));
 
 	while(true)
