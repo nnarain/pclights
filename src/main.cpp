@@ -8,6 +8,7 @@
 #include <simplelogger/logger/console_logger.h>
 
 #include <serialmessages/message_server.h>
+#include <serialmessages/stdmsgs/string.h>
 
 #include <boost/asio.hpp>
 #include <boost/program_options.hpp>
@@ -19,6 +20,11 @@ using namespace simplelogger;
 using namespace serialmessages;
 
 namespace options = boost::program_options;
+
+void myCallback(const stdmsgs::String& msg)
+{
+	LOG_INFO("callback: %s", msg.data);
+}
 
 int main(int argc, char * argv[])
 {
@@ -64,6 +70,9 @@ int main(int argc, char * argv[])
 
 	MessageServer<Serial> server(io_service, port, baud);
 
+	Subscriber<stdmsgs::String> sub1("test_topic", myCallback);
+	server.subscribe(&sub1);
+
 	LOG_INFO("Initializing message server on port %s", port.c_str());
 	if(!server.initialize())
 	{
@@ -71,7 +80,7 @@ int main(int argc, char * argv[])
 		return 1;
 	}
 
-	LOG_INFO("Start IO Service thread");
+	LOG_INFO("Starting IO Service Thread");
 	boost::thread io_thread(boost::bind(&boost::asio::io_service::run, &io_service));
 
 	while(true)

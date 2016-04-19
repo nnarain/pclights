@@ -23,6 +23,8 @@ link_directories(
 
 add_executable(${PROJECT_NAME}
 	src/main.cpp
+	src/serial.cpp
+	src/async_buffer.cpp
 )
 
 # Build external libraries and Projects
