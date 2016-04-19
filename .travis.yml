@@ -19,6 +19,7 @@ install:
   - sudo apt-get install gcc-avr avr-libc binutils-avr
 
 script: 
+  - git submodule init && git submodule update
   - mkdir build && cd build
   - cmake ..
   - make
