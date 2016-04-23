@@ -10,13 +10,15 @@ compiler:
   - g++
 
 before_install:
-  - if [ "$CXX" == "g++" ]; then sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test; fi
-  - sudo apt-get update -qq
+  - git clone --depth=1 https://github.com/nnarain/travis-ci-scripts.git ~/scripts
+  - cd ~/scripts/ && ./bootstrap && cd -
+  - preinstall_general
 
 install:
-  - if [ "$CXX" == "g++" ]; then sudo apt-get install g++-4.8 -qq; fi
-  - sudo apt-get install libboost-system-dev libboost-thread-dev libboost-program-options-dev -qq
-  - sudo apt-get install gcc-avr avr-libc binutils-avr
+  - install_general
+  - install_avr
+  - install_boost 1.60.0 linux --with-system --with-thread --with-program_options
+  - source /opt/boost_1_60_0/setup.bash 
 
 script: 
   - git submodule init && git submodule update
