@@ -7,6 +7,7 @@
 #include <WS2812/Ws2812Driver.h>
 
 #include <serialmessages/message_client.h>
+#include <serialmessages/publisher.h>
 
 #include "serial.h"
 
@@ -23,7 +24,14 @@ int main()
 
 	MessageClient<Serial> client(9600);
 
+	Publisher<stdmsgs::String> pub("test_topic", &client);
+
+	stdmsgs::String msg;
+	msg.data = "Hello World";
+
 	client.initialize();
+
+	pub.publish(msg);
 
 	for(;;)
 	{
