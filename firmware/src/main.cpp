@@ -11,6 +11,8 @@
 
 #include "serial.h"
 
+static const int BAUD = 9600;
+
 GPIO(PORTB, DDRB, GpioB);
 
 typedef Ws2812Driver<GpioB, 5, 60> LedsDriver;
@@ -22,7 +24,7 @@ int main()
 	LedsDriver leds;
 	leds.begin();
 
-	MessageClient<Serial> client(9600);
+	MessageClient<Serial> client(BAUD);
 
 	Publisher<stdmsgs::String> pub("test_topic", &client);
 

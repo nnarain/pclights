@@ -68,7 +68,7 @@ int main(int argc, char * argv[])
 	
 	boost::asio::io_service io_service;
 
-	MessageServer<Serial> server(io_service, port, baud);
+	MessageServer<Serial, 512, 512> server(io_service, port, baud);
 
 	Subscriber<stdmsgs::String> sub1("test_topic", myCallback);
 	server.subscribe(&sub1);
