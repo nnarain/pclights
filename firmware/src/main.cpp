@@ -33,10 +33,9 @@ int main()
 
 	client.initialize();
 
-	pub.publish(msg);
-
 	for(;;)
 	{
+		pub.publish(msg);
 		client.spinOnce();
 	}
 
