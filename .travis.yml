@@ -17,7 +17,7 @@ before_install:
 install:
   - install_general
   - install_avr
-  - install_boost 1.60.0 linux --with-system --with-thread
+  - install_boost 1.60.0 linux --with-system --with-thread --with-program_options
   - source /opt/boost_1_60_0/setup.bash 
 
 script: 
