@@ -26,6 +26,9 @@ public:
 		sci::rx_enable::set();
 		sci::tx_enable::set();
 
+		// enable recieve interrupt
+		sci::rxi_enable::set();
+
 		// frame format
 		sci::frame_format::write(sci::frame_options::DATA8);
 		sci::stop_bits_1::set();
@@ -36,7 +39,7 @@ public:
 
 	int read()
 	{
-		if(sci::data_available::isSet())
+		if(sci::available() > 0)
 		{
 			return (int)sci::getc();
 		}

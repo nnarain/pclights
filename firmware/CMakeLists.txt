@@ -20,5 +20,6 @@ add_definitions(-DF_CPU=16000000)
 add_avr_executable(${PROJECT_NAME}
 	src/main.cpp
 	src/sci.cpp
+#	src/serial.cpp
 )
 

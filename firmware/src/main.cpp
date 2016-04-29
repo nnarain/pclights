@@ -1,5 +1,6 @@
 
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include <util/delay.h>
 
 #include <stdperiph/stdperiph.h>
@@ -45,15 +46,13 @@ int main()
 	Subscriber<stdmsgs::ColorRGB> sub_set_led("set_color", &setColorCallback);
 	client.subscribe(&sub_set_led);
 
-	// Publisher<stdmsgs::ColorRGB> pub_set_color("set_color", &client);
-
 	indicator_start::low();
 	led::low();
 
 	client.initialize();
 
-	indicator_start::high();
-	indicator_callback::low();
+	// indicator_start::high();
+	// indicator_callback::low();
 
 	// leds.begin();
 	// leds.clear();
@@ -64,25 +63,11 @@ int main()
 	// color.g = 0xFF;
 	// color.b = 0x00;
 
-
-
-//	pub_set_color.publish(color);
-
-//	setColorCallback(color);
+	sei();
 
 	for(;;)
 	{
 		client.spinOnce();
-
-		// for(int i = 0; i < 3; ++i)
-		// {
-		// 	for(int j = 0; j < 60; ++j)
-		// 	{
-		// 		leds.setPixel(j, colors[i]);
-		// 		leds.show();
-		// 		_delay_ms(100);
-		// 	}
-		// }
 	}
 
 	return 0;

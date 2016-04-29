@@ -1,5 +1,17 @@
 
 #include "sci.h"
+#include <avr/interrupt.h>
+
+#ifndef SERIAL_BUFFER_SIZE
+#define SERIAL_BUFFER_SIZE 64
+#endif
+
+static uint8_t serial_buffer[SERIAL_BUFFER_SIZE];
+static size_t read_idx = 0;
+static size_t write_idx = 0;
+static size_t bytes_available = 0;
+
+static inline size_t next(size_t idx);
 
 namespace sci
 {
@@ -20,8 +32,11 @@ namespace sci
 
 	char getc()
 	{
-		data_available::waitUntilSet();
-		return UDR0;
+		char c = (char)serial_buffer[write_idx];
+		write_idx = next(write_idx);
+		bytes_available--;
+
+		return c;
 	}
 
 	void gets(char * str, size_t max)
@@ -47,10 +62,26 @@ namespace sci
 
 	void read(uint8_t* data, size_t nbytes)
 	{
-		for(size_t bytes_read = 0; bytes_read <= nbytes; ++bytes_read)
+		while(nbytes--)
 		{
-			*data = getc();
-			data++;
+			*data++ = (uint8_t)getc();
 		}
 	}
+
+	size_t available()
+	{
+		return bytes_available;
+	}
+}
+
+ISR(USART_RX_vect)
+{
+	serial_buffer[read_idx] = UDR0;
+	read_idx = next(read_idx);
+	bytes_available++;
+}
+
+static inline size_t next(size_t idx)
+{
+	return (idx + 1) % SERIAL_BUFFER_SIZE;
 }
