@@ -24,6 +24,9 @@ namespace sci
 	typedef stdperiph::BitRef<PORT_ADDR(UCSR0B), RXEN0> rx_enable;
 	typedef stdperiph::BitRef<PORT_ADDR(UCSR0B), TXEN0> tx_enable;
 
+	typedef stdperiph::BitRef<PORT_ADDR(UCSR0B), RXCIE0> rxi_enable;
+	typedef stdperiph::BitRef<PORT_ADDR(UCSR0B), TXCIE0> txi_enable;
+
 	/* Frame Format */
 	typedef stdperiph::BitGroup<PORT_ADDR(UCSR0C), UCSZ00, UCSZ01-UCSZ00> frame_format;
 
@@ -54,6 +57,8 @@ namespace sci
 
 	void write(uint8_t* data, size_t len);
 	void read(uint8_t* data, size_t nbytes);
+
+	size_t available();
 }
 
 #endif
