@@ -38,7 +38,7 @@ public:
 	{
 		if(sci::data_available::isSet())
 		{
-			return sci::getc();
+			return (int)sci::getc();
 		}
 		else
 		{
