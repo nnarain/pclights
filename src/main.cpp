@@ -82,9 +82,9 @@ int main(int argc, char * argv[])
 	MessageServer<Serial, 512, 512> server(io_service, port, baud);
 
 	// Setup color publisher
-	Publisher<stdmsgs::ColorRGB> pub_set_color("set_color", &server);
-	// Subscriber<stdmsgs::ColorRGB> sub_set_color("set_color", &setColorCallback);
-	// server.subscribe(&sub_set_color);
+//	Publisher<stdmsgs::ColorRGB> pub_set_color("set_color", &server);
+	Subscriber<stdmsgs::ColorRGB> sub_set_color("set_color", &setColorCallback);
+	server.subscribe(&sub_set_color);
 
 	stdmsgs::ColorRGB color;
 	color.r = 0xFF;
@@ -101,11 +101,9 @@ int main(int argc, char * argv[])
 	LOG_INFO("Starting IO Service Thread");
 	boost::thread io_thread(boost::bind(&boost::asio::io_service::run, &io_service));
 
-	
-
 	while(true)
 	{
-		pub_set_color.publish(color);
+	//	pub_set_color.publish(color);
 		server.spinOnce();
 	}
 

@@ -57,8 +57,9 @@ namespace sci
 
 	void write(uint8_t* data, size_t len);
 	void read(uint8_t* data, size_t nbytes);
-
 	size_t available();
+
+	void setBaudPrescaler(uint32_t baud);
 }
 
 #endif

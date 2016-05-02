@@ -35,38 +35,40 @@ using namespace serialmessages;
 /// PROTOTYPES ----------------------------------------------------------------
 void setColorCallback(const stdmsgs::ColorRGB& msg);
 
+void errorCallback(uint8_t b)
+{
+	if(b)
+		indicator_callback::high();
+	else
+		indicator_callback::low();
+}
+
 int main()
 {
 	indicator_callback::mode(stdperiph::BitMode::OUTPUT);
 	indicator_start::mode(stdperiph::BitMode::OUTPUT);
 	led::mode(stdperiph::BitMode::OUTPUT);
 
-	MessageClient<Serial, 128, 128> client(BAUD);
+	indicator_callback::low();
 
-	Subscriber<stdmsgs::ColorRGB> sub_set_led("set_color", &setColorCallback);
-	client.subscribe(&sub_set_led);
+	MessageClient<Serial, 64, 64> client(BAUD);
 
-	indicator_start::low();
-	led::low();
+	Publisher<stdmsgs::ColorRGB> pub_color("set_color", &client);
+
+	client.setLog(errorCallback);
 
 	client.initialize();
 
-	// indicator_start::high();
-	// indicator_callback::low();
-
-	// leds.begin();
-	// leds.clear();
-	// leds.show();
-
-	// stdmsgs::ColorRGB color;
-	// color.r = 0xFF;
-	// color.g = 0xFF;
-	// color.b = 0x00;
+	stdmsgs::ColorRGB color;
+	color.r = 0xFF;
+	color.g = 0xFF;
+	color.b = 0x00;
 
 	sei();
 
 	for(;;)
 	{
+		pub_color.publish(color);
 		client.spinOnce();
 	}
 

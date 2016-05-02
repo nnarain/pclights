@@ -32,8 +32,8 @@ namespace sci
 
 	char getc()
 	{
-		char c = (char)serial_buffer[write_idx];
-		write_idx = next(write_idx);
+		char c = (char)serial_buffer[read_idx];
+		read_idx = next(read_idx);
 		bytes_available--;
 
 		return c;
@@ -72,16 +72,21 @@ namespace sci
 	{
 		return bytes_available;
 	}
+
+	void setBaudPrescaler(uint32_t baud)
+	{
+		
+	}
 }
 
 ISR(USART_RX_vect)
 {
-	serial_buffer[read_idx] = UDR0;
-	read_idx = next(read_idx);
-	bytes_available++;
+	serial_buffer[write_idx] = UDR0;
+	write_idx = next(write_idx);
+	bytes_available = next(bytes_available);
 }
 
-static inline size_t next(size_t idx)
+static inline size_t next(size_t value)
 {
-	return (idx + 1) % SERIAL_BUFFER_SIZE;
+	return (value + 1) % SERIAL_BUFFER_SIZE;
 }
