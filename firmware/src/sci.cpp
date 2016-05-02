@@ -83,10 +83,10 @@ ISR(USART_RX_vect)
 {
 	serial_buffer[write_idx] = UDR0;
 	write_idx = next(write_idx);
-	bytes_available++;
+	bytes_available = next(bytes_available);
 }
 
-static inline size_t next(size_t idx)
+static inline size_t next(size_t value)
 {
-	return (idx + 1) % SERIAL_BUFFER_SIZE;
+	return (value + 1) % SERIAL_BUFFER_SIZE;
 }

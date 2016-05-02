@@ -54,8 +54,6 @@ int main()
 	MessageClient<Serial, 64, 64> client(BAUD);
 
 	Publisher<stdmsgs::ColorRGB> pub_color("set_color", &client);
-	Subscriber<stdmsgs::ColorRGB> sub_set_led("set_color", &setColorCallback);
-	client.subscribe(&sub_set_led);
 
 	client.setLog(errorCallback);
 

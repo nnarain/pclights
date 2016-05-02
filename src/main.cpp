@@ -101,8 +101,6 @@ int main(int argc, char * argv[])
 	LOG_INFO("Starting IO Service Thread");
 	boost::thread io_thread(boost::bind(&boost::asio::io_service::run, &io_service));
 
-	
-
 	while(true)
 	{
 	//	pub_set_color.publish(color);

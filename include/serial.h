@@ -21,6 +21,8 @@ public:
 
 	void write(uint8_t* data, size_t len);
 
+	uint32_t time();
+
 private:
 	void writeHandler(const boost::system::system_error& error, std::size_t bytes_transferred);
 

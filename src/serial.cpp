@@ -3,6 +3,8 @@
 
 #include <simplelogger/simplelogger.h>
 
+#include <boost/date_time/posix_time/posix_time_types.hpp>
+
 Serial::Serial(boost::asio::io_service& io, std::string port, size_t baud) :
 	serial_(io),
 	port_(port),
@@ -42,6 +44,14 @@ bool Serial::initialize()
 	}
 
 	return true;
+}
+
+uint32_t Serial::time()
+{
+	boost::posix_time::ptime time = boost::posix_time::microsec_clock::local_time();
+	boost::posix_time::time_duration duration(time.time_of_day());
+
+	return duration.total_milliseconds();
 }
 
 int Serial::read()
