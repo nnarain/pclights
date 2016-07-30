@@ -8,6 +8,8 @@ set(EXTERNAL_DIR "${CMAKE_SOURCE_DIR}/external")
 
 project(pclights-firmware)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+
 include_directories(
 	include/
 	${EXTERNAL_DIR}/stdperiph/include/

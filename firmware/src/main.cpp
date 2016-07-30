@@ -15,10 +15,7 @@
 
 static const int BAUD = 9600;
 
-GPIO(PORTB, DDRB, GpioB);
-typedef stdperiph::GpioPinRef<GpioB, 4> indicator_callback;
-typedef stdperiph::GpioPinRef<GpioB, 3> indicator_start;
-typedef stdperiph::GpioPinRef<GpioB, 5> led;
+GPIO(PORTB_ADDR, DDRB_ADDR, GpioB);
 
 //typedef Ws2812Driver<GpioB, 5, 60> LedsDriver;
 
