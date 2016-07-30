@@ -18,12 +18,12 @@ install:
   - install_general
   - install_avr
   - install_boost 1.60.0 linux --with-system --with-thread --with-program_options
-  - source /opt/boost_1_60_0/setup.bash 
+  - source /opt/boost_1_60_0/setup.bash
 
-script: 
+script:
   - git submodule init && git submodule update
   - mkdir build && cd build
-  - cmake ..
+  - cmake ../firmware/
   - make
 
 deploy:
