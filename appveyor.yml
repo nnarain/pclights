@@ -10,7 +10,7 @@ clone_folder: c:\projects\pclights
 before_build:
     - echo "Generating Visual Studio Solution..."
     - cd c:\projects\pclights
-    - mkdir build && build
+    - mkdir build && cd build
     - cmake ..
 
 build:
