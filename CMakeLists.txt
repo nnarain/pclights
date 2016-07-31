@@ -8,4 +8,37 @@
 cmake_minimum_required(VERSION 2.8)
 
 project(pclights)
-add_subdirectory(firmware)
+
+# set flags for g++/gcc compiler
+if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -std=c++11")
+endif()
+
+include_directories(
+    include/
+)
+
+add_executable(${PROJECT_NAME}
+    src/main.cpp
+)
+
+
+include(ExternalProject)
+
+ExternalProject_Add(
+    firmware
+
+    URL "firmware"
+
+    SOURCE_DIR "${CMAKE_SOURCE_DIR}/firmware"
+    BINARY_DIR "${CMAKE_BINARY_DIR}/firmware"
+
+    DOWNLOAD_COMMAND ""
+    UPDATE_COMMAND   ""
+    PATCH_COMMAND    ""
+    INSTALL_COMMAND  ""
+
+    CMAKE_ARGS
+        "-DAVR_UPLOAD_PORT=${AVR_UPLOAD_TOOL}"
+        "-DAVR_UPLOAD_BAUD=115200"
+)
