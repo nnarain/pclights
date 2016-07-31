@@ -5,6 +5,9 @@
 
 os: Visual Studio 2015
 
+environment:
+    BOOST_ROOT: C:\Libraries\boost_1_60_0
+
 clone_folder: c:\projects\pclights
 
 before_build:

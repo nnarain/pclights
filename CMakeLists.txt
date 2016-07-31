@@ -14,14 +14,20 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -std=c++11")
 endif()
 
+find_package(Boost COMPONENTS system program_options REQUIRED)
+
 include_directories(
     include/
+	${Boost_INCLUDE_DIR}
 )
 
 add_executable(${PROJECT_NAME}
     src/main.cpp
 )
 
+target_link_libraries(${PROJECT_NAME}
+	${Boost_LIBRARIES}
+)
 
 include(ExternalProject)
 
