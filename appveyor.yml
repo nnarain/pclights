@@ -1,0 +1,17 @@
+#
+# PC Lights build
+#
+# @author Natesh Narain <nnaraindev@gmail.com>
+
+os: Visual Studio 2015
+
+clone_folder: c:\projects\pclights
+
+before_build:
+    - echo "Generating Visual Studio Solution..."
+    - cd c:\projects\pclights
+    - mkdir build && build
+    - cmake ..
+
+build:
+  project: c:\projects\pclights\build\pclights.sln
