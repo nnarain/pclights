@@ -29,9 +29,18 @@ target_link_libraries(${PROJECT_NAME}
 	${Boost_LIBRARIES}
 )
 
-include(ExternalProject)
+if(WIN32)
+	add_definitions(
+		-DBOOST_ALL_NO_LIB # disable auto linking
+		-D_WIN32_WINNT=0x0501
+	)
+	target_link_libraries(${PROJECT_NAME}
+		ws2_32
+	)
+endif()
 
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+	include(ExternalProject)
 	ExternalProject_Add(
 	    firmware
 

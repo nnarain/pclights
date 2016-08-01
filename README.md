@@ -11,10 +11,21 @@ Build
 -----
 
 * Install Boost C++
+* Install avr toolchain
+* Set appropriate Boost environment variables like `BOOST_ROOT`
+
+Also be sure to set the correct library type using the FindBoost module's variables `Boost_USE_STATIC_LIBS` and `BOOST_USE_MULTITHREADED`
+
+For example:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.sh}
+cd /path/to/project
+mkdir build && cd build
+cmake .. -DBoost_USE_STATIC_LIBS=ON -DBoost_USE_MULTITHREADED=ON
+make
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Linux**
-
-* Install avr compiler and libraries
 
 Then run cmake and make
 
@@ -26,8 +37,6 @@ make
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Windows**
-
-* Install avr compiler and library for windows
 
 The cmake External Project build for the firmware doesn't work well when generating Visual Studio project files (work with Unix Makefiles generator).
 
@@ -42,6 +51,8 @@ cmake -G "Unix Makefiles" ..
 make
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Must have an appropriate GNU compiler installed.
+
 * Use "Visual Studio <version>" generator
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.sh}
@@ -53,6 +64,3 @@ mkdir build && cd build
 cmake ..
 make
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Usage
------
