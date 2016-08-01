@@ -8,12 +8,12 @@ set(EXTERNAL_DIR "${CMAKE_SOURCE_DIR}/external")
 
 project(pclights-firmware)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+
 include_directories(
 	include/
 	${EXTERNAL_DIR}/stdperiph/include/
 	${EXTERNAL_DIR}/WS2812-driver/include/
-
-	${EXTERNAL_COMMON_DIR}/serial-messages/include/
 )
 
 add_definitions(-DF_CPU=16000000)
@@ -22,4 +22,3 @@ add_avr_executable(${PROJECT_NAME}
 	src/sci.cpp
 #	src/serial.cpp
 )
-

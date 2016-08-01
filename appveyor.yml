@@ -1,0 +1,21 @@
+#
+# PC Lights build
+#
+# @author Natesh Narain <nnaraindev@gmail.com>
+
+os: Visual Studio 2015
+
+environment:
+    BOOST_ROOT: C:\Libraries\boost_1_60_0
+    BOOST_LIBRARYDIR: C:\Libraries\boost_1_60_0\lib32-msvc-14.0
+
+clone_folder: c:\projects\pclights
+
+before_build:
+    - echo "Generating Visual Studio Solution..."
+    - cd c:\projects\pclights
+    - mkdir build && cd build
+    - cmake ..
+
+build:
+  project: c:\projects\pclights\build\pclights.sln
