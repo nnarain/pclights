@@ -7,11 +7,52 @@ Stream animations to a Atmega328p microcontroller to drive a WS2812 led strip in
 Hardware
 --------
 
-Libraries
----------
-
 Build
 -----
+
+* Install Boost C++
+
+**Linux**
+
+* Install avr compiler and libraries
+
+Then run cmake and make
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.sh}
+cd /path/to/project
+mkdir build && cd build
+cmake ..
+make
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Windows**
+
+* Install avr compiler and library for windows
+
+The cmake External Project build for the firmware doesn't work well when generating Visual Studio project files (work with Unix Makefiles generator).
+
+For this reason building this project on Windows has to options.
+
+* Use "Unix Makefiles" generator
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.sh}
+cd /path/to/project
+mkdir build && cd build
+cmake -G "Unix Makefiles" ..
+make
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* Use "Visual Studio <version>" generator
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.sh}
+cd /path/to/project
+mkdir build && cd build
+cmake -G "Visual Studio 14 2015" ..
+cd ../firmware
+mkdir build && cd build
+cmake ..
+make
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Usage
 -----
