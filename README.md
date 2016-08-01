@@ -61,6 +61,6 @@ mkdir build && cd build
 cmake -G "Visual Studio 14 2015" ..
 cd ../firmware
 mkdir build && cd build
-cmake ..
+cmake -G "Unix Makefiles" ..
 make
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
