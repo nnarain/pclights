@@ -21,8 +21,12 @@ include_directories(
 	${Boost_INCLUDE_DIR}
 )
 
+set(HEADERS
+	include/serial.h
+)
 add_executable(${PROJECT_NAME}
     src/main.cpp
+	${HEADERS}
 )
 
 target_link_libraries(${PROJECT_NAME}

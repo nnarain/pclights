@@ -72,7 +72,7 @@ find_program(AVR_UPLOAD
 )
 
 if(NOT AVR_UPLOAD_BAUD)
-	set(AVR_UPLOAD_BAUD 57600)
+	set(AVR_UPLOAD_BAUD 115200)
 endif(NOT AVR_UPLOAD_BAUD)
 
 if(NOT AVR_UPLOAD_PROGRAMMER)
@@ -97,12 +97,6 @@ find_program(SIMAVR
 		/usr/bin/
 		$ENV{SIMAVR_HOME}
 )
-
-if(NOT SIMAVR)
-	message("-- Could not find simavr")
-else(NOT SIMAVR)
-	message("-- Found simavr: ${SIMAVR}")
-endif(NOT SIMAVR)
 
 # setup the avr exectable macro
 

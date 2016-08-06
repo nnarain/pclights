@@ -1,29 +1,40 @@
 
+/**
+	PC Lights MCU firmware
+
+	@author Natesh Narain <nnaraindev@gmail.com>
+	@date August 6 2016
+*/
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
-#include <stdperiph/stdperiph.h>
-
-#include <WS2812/Ws2812Driver.h>
-
+#include "io_config.h"
 #include "serial.h"
 
-#define RED   0xFF0000
-#define GREEN 0x00FF00
-#define BLUE  0x0000FF
+#define BAUD_RATE 9600
 
-static const int BAUD = 9600;
-
-GPIO(PORTB_ADDR, DDRB_ADDR, GpioB);
-
-//typedef Ws2812Driver<GpioB, 5, 60> LedsDriver;
-
-/// VARS ----------------------------------------------------------------------
-//static LedsDriver leds;
 
 int main()
 {
+	led::mode(stdperiph::BitMode::OUTPUT);
+	led::low();
+	
+	Serial serial(BAUD_RATE);
+	serial.initialize();
 
+	sei();
+	
+	for(;;)
+	{
+		if(sci::available() > 0)
+		{
+			led::high();
+		}
+	}
+	
 	return 0;
 }
+
+
