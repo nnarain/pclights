@@ -26,6 +26,7 @@ set(HEADERS
 )
 add_executable(${PROJECT_NAME}
     src/main.cpp
+	src/serial.cpp
 	${HEADERS}
 )
 
