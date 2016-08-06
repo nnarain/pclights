@@ -8,8 +8,6 @@
 
 #define PORT_ADDR(port) ((uint16_t)&(port))
 
-#define DDRB_ADDR   0x04
-#define PORTB_ADDR  0x05
 #define UCSR0A_ADDR 0xC0
 #define UCSR0B_ADDR 0xC1
 #define UCSR0C_ADDR 0xC2

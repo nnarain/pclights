@@ -6,6 +6,9 @@
 
 #include "sci.h"
 
+#ifndef F_CPU
+#	error "F_CPU is not defined"
+#endif
 #define BAUD_RATE(baud) ((F_CPU / 16 / (baud))-1)
 
 class Serial
