@@ -23,7 +23,6 @@ include_directories(
 
 set(HEADERS
 	include/serial.h
-	include/communication.h
 )
 add_executable(${PROJECT_NAME}
     src/main.cpp
