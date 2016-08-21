@@ -33,7 +33,7 @@ script:
   - make
   - echo "Building pclights-firmware"
   - cd ../firmware
-  - platformio ci --board=uno --lib="."
+  - platformio ci --project-conf=platformio.ini
 
 deploy:
   provider: releases
