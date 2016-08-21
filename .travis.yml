@@ -21,10 +21,7 @@ install:
   - source /opt/boost_1_60_0/setup.bash
 
 script:
-  - git submodule init && git submodule update
-  - mkdir build && cd build
-  - cmake ../firmware/
-  - make
+  - echo "nothing to build"
 
 deploy:
   provider: releases
