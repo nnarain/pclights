@@ -13,16 +13,27 @@ void delay(unsigned int ms)
 	std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
 
-void clear(Serial& comm)
-{
-	uint8_t data[] = { 'P', 'L', 0, 0, 0 };
-	comm.write(data, 5);
-}
-
 void setColor(Serial& comm, uint8_t r, uint8_t g, uint8_t b)
 {
 	uint8_t data[] = { 'P', 'L', 1, 0, 3, r, g, b };
 	comm.write(data, 8);
+}
+
+void clear(Serial& comm)
+{
+	setColor(comm, 0, 0, 0);
+}
+
+void setPixel(Serial& comm, uint8_t pixel, uint8_t r, uint8_t g, uint8_t b)
+{
+	uint8_t data[] = { 'P', 'L', 2, 0, 4, pixel, r, g, b };
+	comm.write(data, 8);
+}
+
+void setLevel(Serial& comm, uint8_t level)
+{
+	uint8_t data[] = { 'P', 'L', 3, 0, 1, level };
+	comm.write(data, 6);
 }
 
 int main(int argc, char * argv[])
@@ -35,12 +46,8 @@ int main(int argc, char * argv[])
 	Serial comm(io, device_name, baud_rate);
 
 	clear(comm);
-	delay(1000);
-	setColor(comm, 255, 0, 0);
-	delay(1000);
-	clear(comm);
-	delay(1000);
-	setColor(comm, 0, 255, 0);
+	setColor(comm, 255, 255, 0);
+
 
 
     return 0;

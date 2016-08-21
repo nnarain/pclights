@@ -18,8 +18,10 @@
 
 enum Command
 {
-    CLEAR = 0,
-    SET_COLOR = 1
+    SET_COLOR = 0,
+    SET_PIXEL = 1,
+    SET_LEVEL = 2,
+    SET_RLE   = 3
 };
 
 struct Header
@@ -29,42 +31,20 @@ struct Header
     uint16_t payload_length;
 };
 
+// -----------------------------------------------------------------------------
+// Prototypes
+//------------------------------------------------------------------------------
+Header readHeader();
+void clear();
+void setColor();
+void setPixel();
+void setLevel();
+void setRLE();
+
+// -----------------------------------------------------------------------------
+// Globals
+//------------------------------------------------------------------------------
 static Adafruit_NeoPixel pixels(NUM_PIXELS, PIN, NEO_GRB + NEO_KHZ800);
-
-void clear()
-{
-    for(int i = 0; i < NUM_PIXELS; ++i)
-    {
-        pixels.setPixelColor(i, 0, 0, 0);
-    }
-
-    pixels.show();
-}
-
-void setColor()
-{
-    char buffer[3];
-    Serial.readBytes(buffer, 3);
-
-    for(int i = 0; i < NUM_PIXELS; ++i)
-    {
-        pixels.setPixelColor(i, buffer[0], buffer[1], buffer[2]);
-    }
-
-    pixels.show();
-}
-
-Header readHeader()
-{
-    Header header;
-    char buffer[sizeof(Header)];
-    Serial.readBytes(buffer, sizeof(Header));
-
-    SerialStream ss(buffer);
-    ss >> header.signature >> header.command >> header.payload_length;
-
-    return header;
-}
 
 void setup()
 {
@@ -88,13 +68,77 @@ void loop()
         {
             switch(header.command)
             {
-                case CLEAR:
-                    clear();
-                    break;
                 case SET_COLOR:
                     setColor();
+                    break;
+                case SET_PIXEL:
+                    setPixel();
+                    break;
+                case SET_LEVEL:
+                    setLevel();
+                    break;
+                case SET_RLE:
+                    setRLE();
                     break;
             }
         }
     }
+}
+
+void clear()
+{
+    for(int i = 0; i < NUM_PIXELS; ++i)
+    {
+        pixels.setPixelColor(i, 0, 0, 0);
+    }
+
+    pixels.show();
+}
+
+void setPixel()
+{
+    char buffer[4];
+    Serial.readBytes(buffer, 4);
+
+    pixels.setPixelColor(buffer[0], buffer[1], buffer[2], buffer[3]);
+    pixels.show();
+}
+
+void setLevel()
+{
+    char level;
+    Serial.readBytes(&level, 1);
+
+    pixels.setBrightness((uint8_t)level);
+    pixels.show();
+}
+
+void setColor()
+{
+    char buffer[3];
+    Serial.readBytes(buffer, 3);
+
+    for(int i = 0; i < NUM_PIXELS; ++i)
+    {
+        pixels.setPixelColor(i, buffer[0], buffer[1], buffer[2]);
+    }
+
+    pixels.show();
+}
+
+void setRLE()
+{
+    
+}
+
+Header readHeader()
+{
+    Header header;
+    char buffer[sizeof(Header)];
+    Serial.readBytes(buffer, sizeof(Header));
+
+    SerialStream ss(buffer);
+    ss >> header.signature >> header.command >> header.payload_length;
+
+    return header;
 }

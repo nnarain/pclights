@@ -10,8 +10,9 @@ Hardware
 Build
 -----
 
+**PC Lights command line program**
+
 * Install Boost C++
-* Install avr toolchain
 * Set appropriate Boost environment variables like `BOOST_ROOT`
 
 Also be sure to set the correct library type using the FindBoost module's variables `Boost_USE_STATIC_LIBS` and `BOOST_USE_MULTITHREADED`
@@ -25,42 +26,6 @@ cmake .. -DBoost_USE_STATIC_LIBS=ON -DBoost_USE_MULTITHREADED=ON
 make
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Linux**
+**PC Lights firmware**
 
-Then run cmake and make
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.sh}
-cd /path/to/project
-mkdir build && cd build
-cmake ..
-make
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-**Windows**
-
-The cmake External Project build for the firmware doesn't work well when generating Visual Studio project files (work with Unix Makefiles generator).
-
-For this reason building this project on Windows has to options.
-
-* Use "Unix Makefiles" generator
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.sh}
-cd /path/to/project
-mkdir build && cd build
-cmake -G "Unix Makefiles" ..
-make
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Must have an appropriate GNU compiler installed.
-
-* Use "Visual Studio <version>" generator
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.sh}
-cd /path/to/project
-mkdir build && cd build
-cmake -G "Visual Studio 14 2015" ..
-cd ../firmware
-mkdir build && cd build
-cmake -G "Unix Makefiles" ..
-make
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Builds with PlatformIO
