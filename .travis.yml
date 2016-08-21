@@ -17,7 +17,6 @@ env:
   - PLATFORMIO_CI_SRC=~/pclights/firmware/src
 
 before_install:
-  - ls ~
   - git clone --depth=1 https://github.com/nnarain/travis-ci-scripts.git ~/scripts
   - cd ~/scripts/ && ./bootstrap && cd -
   - preinstall_general
@@ -31,6 +30,7 @@ install:
   - platformio lib install 28
 
 script:
+  - ls $TRAVIS_BUILD_DIR
   - echo "Building pclights"
   - mkdir build && cd build
   - cmake ..
