@@ -1,29 +1,39 @@
 language: cpp
+
+os:
+  - linux
 dist: trusty
 
 sudo: required
 
-os:
-  - linux
-
 compiler:
   - g++
+
+cache:
+  directories:
+    - "~/.platformio"
 
 before_install:
   - git clone --depth=1 https://github.com/nnarain/travis-ci-scripts.git ~/scripts
   - cd ~/scripts/ && ./bootstrap && cd -
   - preinstall_general
+  - pip install -U platformio
 
 install:
   - install_general
-  - install_avr
   - install_boost 1.60.0 linux --with-system --with-program_options
   - source /opt/boost_1_60_0/setup.bash
+  - echo "Install Arduino Adafruit NeoPixel library"
+  - platformio lib install 28
 
 script:
-  - mkdir build && build
+  - echo "Building pclights"
+  - mkdir build && cd build
   - cmake ..
   - make
+  - echo "Building pclights-firmware"
+  - cd ../firmware
+  - platformio ci --board=uno --lib="."
 
 deploy:
   provider: releases
