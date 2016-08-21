@@ -17,7 +17,7 @@ env:
   - PLATFORMIO_CI_SRC=~/pclights/firmware/src
 
 before_install:
-  - ls ~/pclights/firmware/src
+  - ls ~
   - git clone --depth=1 https://github.com/nnarain/travis-ci-scripts.git ~/scripts
   - cd ~/scripts/ && ./bootstrap && cd -
   - preinstall_general
