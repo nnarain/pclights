@@ -1,6 +1,8 @@
 
 #include <iostream>
 #include <string>
+#include <thread>
+#include <chrono>
 
 #include <boost/asio.hpp>
 
@@ -14,10 +16,10 @@ int main(int argc, char * argv[])
 	unsigned int baud_rate = 9600;
 
 	Serial comm_(io, device_name, baud_rate);
-	uint8_t data[] = { 5 };
+	uint8_t data[] = { 1, 2, 3 };
 
 	std::cout << "-- sending a byte to the mcu" << std::endl;
-	comm_.write(data, 1);
+	comm_.write(data, 3);
 
 	std::cout << "-- finished writing to device" << std::endl;
 

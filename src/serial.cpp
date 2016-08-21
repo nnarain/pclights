@@ -1,6 +1,12 @@
 
 #include "serial.h"
 
+#ifdef _WIN32
+#	include <windows.h>
+#endif
+
+#include <exception>
+
 Serial::Serial(boost::asio::io_service& io, const std::string& device_name, unsigned int baud) :
 	serial_(io),
 	device_name_(device_name),
@@ -11,7 +17,6 @@ Serial::Serial(boost::asio::io_service& io, const std::string& device_name, unsi
 	serial_.set_option(boost::asio::serial_port_base::character_size(8));
 	serial_.set_option(boost::asio::serial_port_base::stop_bits(boost::asio::serial_port_base::stop_bits::one));
 	serial_.set_option(boost::asio::serial_port_base::parity(boost::asio::serial_port_base::parity::none));
-	serial_.set_option(boost::asio::serial_port_base::flow_control(boost::asio::serial_port_base::flow_control::none));
 }
 
 void Serial::init()
