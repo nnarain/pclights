@@ -21,7 +21,9 @@ install:
   - source /opt/boost_1_60_0/setup.bash
 
 script:
-  - echo "nothing to build"
+  - mkdir build && build
+  - cmake ..
+  - make
 
 deploy:
   provider: releases
