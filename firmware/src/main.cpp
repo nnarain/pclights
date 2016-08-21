@@ -72,7 +72,6 @@ void setup()
 
     pixels.begin();
     pixels.clear();
-    pixels.setPixelColor(0, 255, 0, 0);
     pixels.show();
 }
 
