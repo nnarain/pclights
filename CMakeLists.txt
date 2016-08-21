@@ -44,23 +44,23 @@ if(WIN32)
 	)
 endif()
 
-if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
-	include(ExternalProject)
-	ExternalProject_Add(
-	    firmware
-
-	    URL "firmware"
-
-	    SOURCE_DIR "${CMAKE_SOURCE_DIR}/firmware"
-	    BINARY_DIR "${CMAKE_BINARY_DIR}/firmware"
-
-	    DOWNLOAD_COMMAND ""
-	    UPDATE_COMMAND   ""
-	    PATCH_COMMAND    ""
-	    INSTALL_COMMAND  ""
-
-	    CMAKE_ARGS
-	        "-DAVR_UPLOAD_PORT=${AVR_UPLOAD_TOOL}"
-	        "-DAVR_UPLOAD_BAUD=115200"
-	)
-endif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+# if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+# 	include(ExternalProject)
+# 	ExternalProject_Add(
+# 	    firmware
+#
+# 	    URL "firmware"
+#
+# 	    SOURCE_DIR "${CMAKE_SOURCE_DIR}/firmware"
+# 	    BINARY_DIR "${CMAKE_BINARY_DIR}/firmware"
+#
+# 	    DOWNLOAD_COMMAND ""
+# 	    UPDATE_COMMAND   ""
+# 	    PATCH_COMMAND    ""
+# 	    INSTALL_COMMAND  ""
+#
+# 	    CMAKE_ARGS
+# 	        "-DAVR_UPLOAD_PORT=${AVR_UPLOAD_TOOL}"
+# 	        "-DAVR_UPLOAD_BAUD=115200"
+# 	)
+# endif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
