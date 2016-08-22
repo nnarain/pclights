@@ -26,8 +26,6 @@ install:
   - install_general
   - install_boost 1.60.0 linux --with-system --with-program_options
   - source /opt/boost_1_60_0/setup.bash
-  - echo "Install Arduino Adafruit NeoPixel library"
-  - platformio lib install 28
 
 script:
   - ls $TRAVIS_BUILD_DIR
@@ -37,7 +35,7 @@ script:
   - make
   - echo "Building pclights-firmware"
   - cd ../firmware
-  - platformio ci --project-conf=platformio.ini
+  - platformio ci --project-conf=platformio.ini --lib="./lib/SerialStream"
 
 deploy:
   provider: releases
