@@ -1,29 +1,163 @@
 
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include <util/delay.h>
+/**
+    PC Lights Firmware
 
-#include <stdperiph/stdperiph.h>
+    @author Natesh Narain
+    @date August 20 2016
+*/
 
-#include <WS2812/Ws2812Driver.h>
+#include <Arduino.h>
+#include <Adafruit_NeoPixel.h>
 
-#include "serial.h"
+#include "SerialStream.h"
 
-#define RED   0xFF0000
-#define GREEN 0x00FF00
-#define BLUE  0x0000FF
+#define PIN 6
+#define NUM_PIXELS 60
 
-static const int BAUD = 9600;
+#define SIGNATURE ((('P' & 0xFFFF) << 8) | 'L')
 
-GPIO(PORTB_ADDR, DDRB_ADDR, GpioB);
-
-//typedef Ws2812Driver<GpioB, 5, 60> LedsDriver;
-
-/// VARS ----------------------------------------------------------------------
-//static LedsDriver leds;
-
-int main()
+enum Command
 {
+    SET_COLOR = 0,
+    SET_PIXEL = 1,
+    SET_LEVEL = 2,
+    SET_RLE   = 3
+};
 
-	return 0;
+struct Header
+{
+    uint16_t signature;
+    uint8_t command;
+    uint16_t payload_length;
+};
+
+// -----------------------------------------------------------------------------
+// Prototypes
+//------------------------------------------------------------------------------
+Header readHeader();
+void clear();
+void setColor();
+void setPixel();
+void setLevel();
+void setRLE(unsigned int);
+
+// -----------------------------------------------------------------------------
+// Globals
+//------------------------------------------------------------------------------
+static Adafruit_NeoPixel pixels(NUM_PIXELS, PIN, NEO_GRB + NEO_KHZ800);
+
+void setup()
+{
+    Serial.begin(9600);
+
+    pixels.begin();
+    pixels.clear();
+    pixels.show();
+}
+
+void loop()
+{
+    // check if a header is available
+    if((unsigned int)Serial.available() >= sizeof(Header))
+    {
+        // get the header
+        Header header = readHeader();
+
+        // verify the signature is correct
+        if(header.signature == SIGNATURE)
+        {
+            switch(header.command)
+            {
+                case SET_COLOR:
+                    setColor();
+                    break;
+                case SET_PIXEL:
+                    setPixel();
+                    break;
+                case SET_LEVEL:
+                    setLevel();
+                    break;
+                case SET_RLE:
+                    setRLE(header.payload_length);
+                    break;
+            }
+        }
+    }
+}
+
+void clear()
+{
+    for(int i = 0; i < NUM_PIXELS; ++i)
+    {
+        pixels.setPixelColor(i, 0, 0, 0);
+    }
+
+    pixels.show();
+}
+
+void setPixel()
+{
+    char buffer[4];
+    Serial.readBytes(buffer, 4);
+
+    pixels.setPixelColor(buffer[0], buffer[1], buffer[2], buffer[3]);
+    pixels.show();
+}
+
+void setLevel()
+{
+    char level;
+    Serial.readBytes(&level, 1);
+
+    pixels.setBrightness((uint8_t)level);
+    pixels.show();
+}
+
+void setColor()
+{
+    char buffer[3];
+    Serial.readBytes(buffer, 3);
+
+    for(int i = 0; i < NUM_PIXELS; ++i)
+    {
+        pixels.setPixelColor(i, buffer[0], buffer[1], buffer[2]);
+    }
+
+    pixels.show();
+}
+
+void setRLE(unsigned int payload_length)
+{
+    // Read runs of pixels from payload, in chunks of 4 bytes
+    // [run length, R, G, B]
+
+    unsigned int num_runs = payload_length / 4;
+    unsigned int pixel = 1;
+
+    for(unsigned int i = 0; i < num_runs; ++i)
+    {
+        char buffer[4];
+        Serial.readBytes(buffer, 4);
+
+        unsigned char run_length = (unsigned char)buffer[0];
+
+        for(unsigned char j = 0; j < run_length; ++j)
+        {
+            pixels.setPixelColor(pixel++, buffer[1], buffer[2], buffer[3]);
+        }
+    }
+
+    pixels.show();
+}
+
+Header readHeader()
+{
+    Header header;
+    char buffer[sizeof(Header)];
+    Serial.readBytes(buffer, sizeof(Header));
+
+    SerialStream ss(buffer);
+    ss >> header.signature >> header.command >> header.payload_length;
+
+    return header;
 }

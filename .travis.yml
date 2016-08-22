@@ -1,30 +1,41 @@
 language: cpp
+
+os:
+  - linux
 dist: trusty
 
 sudo: required
 
-os:
-  - linux
-
 compiler:
   - g++
+
+cache:
+  directories:
+    - "~/.platformio"
+
+env:
+  - PLATFORMIO_CI_SRC=$TRAVIS_BUILD_DIR/firmware/src
 
 before_install:
   - git clone --depth=1 https://github.com/nnarain/travis-ci-scripts.git ~/scripts
   - cd ~/scripts/ && ./bootstrap && cd -
   - preinstall_general
+  - pip install -U platformio
 
 install:
   - install_general
-  - install_avr
   - install_boost 1.60.0 linux --with-system --with-program_options
   - source /opt/boost_1_60_0/setup.bash
 
 script:
-  - git submodule init && git submodule update
+  - ls $TRAVIS_BUILD_DIR
+  - echo "Building pclights"
   - mkdir build && cd build
-  - cmake ../firmware/
+  - cmake ..
   - make
+  - echo "Building pclights-firmware"
+  - cd ../firmware
+  - platformio ci --project-conf=platformio.ini --lib="./lib/SerialStream"
 
 deploy:
   provider: releases
