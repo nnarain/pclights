@@ -39,7 +39,7 @@ void clear();
 void setColor();
 void setPixel();
 void setLevel();
-void setRLE();
+void setRLE(unsigned int);
 
 // -----------------------------------------------------------------------------
 // Globals
@@ -78,7 +78,7 @@ void loop()
                     setLevel();
                     break;
                 case SET_RLE:
-                    setRLE();
+                    setRLE(header.payload_length);
                     break;
             }
         }
@@ -126,9 +126,28 @@ void setColor()
     pixels.show();
 }
 
-void setRLE()
+void setRLE(unsigned int payload_length)
 {
-    
+    // Read runs of pixels from payload, in chunks of 4 bytes
+    // [run length, R, G, B]
+
+    unsigned int num_runs = payload_length / 4;
+    unsigned int pixel = 1;
+
+    for(unsigned int i = 0; i < num_runs; ++i)
+    {
+        char buffer[4];
+        Serial.readBytes(buffer, 4);
+
+        unsigned char run_length = (unsigned char)buffer[0];
+
+        for(unsigned char j = 0; j < run_length; ++j)
+        {
+            pixels.setPixelColor(pixel++, buffer[1], buffer[2], buffer[3]);
+        }
+    }
+
+    pixels.show();
 }
 
 Header readHeader()

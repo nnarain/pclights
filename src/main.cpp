@@ -15,7 +15,7 @@ void delay(unsigned int ms)
 
 void setColor(Serial& comm, uint8_t r, uint8_t g, uint8_t b)
 {
-	uint8_t data[] = { 'P', 'L', 1, 0, 3, r, g, b };
+	uint8_t data[] = { 'P', 'L', 0, 0, 3, r, g, b };
 	comm.write(data, 8);
 }
 
@@ -26,14 +26,20 @@ void clear(Serial& comm)
 
 void setPixel(Serial& comm, uint8_t pixel, uint8_t r, uint8_t g, uint8_t b)
 {
-	uint8_t data[] = { 'P', 'L', 2, 0, 4, pixel, r, g, b };
+	uint8_t data[] = { 'P', 'L', 1, 0, 4, pixel, r, g, b };
 	comm.write(data, 8);
 }
 
 void setLevel(Serial& comm, uint8_t level)
 {
-	uint8_t data[] = { 'P', 'L', 3, 0, 1, level };
+	uint8_t data[] = { 'P', 'L', 2, 0, 1, level };
 	comm.write(data, 6);
+}
+
+void setRLE(Serial& comm)
+{
+	uint8_t data[] = { 'P', 'L', 3, 0, 12, 5, 255, 0, 0, 5, 0, 255, 0, 5, 0, 0, 255 };
+	comm.write(data, 17);
 }
 
 int main(int argc, char * argv[])
@@ -46,9 +52,7 @@ int main(int argc, char * argv[])
 	Serial comm(io, device_name, baud_rate);
 
 	clear(comm);
-	setColor(comm, 255, 255, 0);
-
-
+	setRLE(comm);
 
     return 0;
 }
