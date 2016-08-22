@@ -32,6 +32,14 @@ public:
 		link_.write(data, 6);
 	}
 
+	void setFrame(uint8_t *payload, std::size_t length)
+	{
+		uint8_t header[] = { 'P', 'L', 3, (uint8_t)(length >> 8), (uint8_t)(length & 0x00FF) };
+
+		link_.write(header, 5);
+		link_.write(payload, length);
+	}
+
 private:
 	DataLinkT link_;
 };

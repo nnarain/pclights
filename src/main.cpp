@@ -13,6 +13,7 @@
 #include "protocol.h"
 #include "serial.h"
 #include "configuration.h"
+#include "animation.h"
 
 namespace po = boost::program_options;
 
@@ -29,6 +30,7 @@ struct SetLevelCommand
 };
 
 using Command = boost::variant<SetColorCommand, SetLevelCommand>;
+using MyProtocol = Protocol<Serial>;
 
 /* Visitor to use with boost::variant when parsing command line commands */
 
@@ -106,9 +108,9 @@ int main(int argc, char * argv[])
 	unsigned int baud_rate  = getOption<unsigned int>("baud", config, vm);
 
 	boost::asio::io_service io;
-	Protocol<Serial> comm(io, device_name, baud_rate);
+	MyProtocol comm(io, device_name, baud_rate);
 
-	boost::apply_visitor(CommandVisitor<Protocol<Serial>>(comm), cmd);
+	boost::apply_visitor(CommandVisitor<MyProtocol>(comm), cmd);
 
     return 0;
 }
