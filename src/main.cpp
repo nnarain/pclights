@@ -12,6 +12,7 @@
 
 #include "protocol.h"
 #include "serial.h"
+#include "configuration.h"
 
 namespace po = boost::program_options;
 
@@ -57,7 +58,7 @@ private:
 /**
 	Parse command line for commands and arguments
 */
-Command parserCommands(po::variables_map& vm, int argc, char * argv[]);
+Command parseCommands(po::variables_map& vm, int argc, char * argv[]);
 
 void parseCommandArguments(
 	po::parsed_options& parsed,
@@ -66,17 +67,45 @@ void parseCommandArguments(
 	po::variables_map& vm
 );
 
+template<typename T>
+T getOption(const std::string& name, Configuration& config, po::variables_map& vm)
+{
+	if (vm.count(name) == 1)
+	{
+		return vm[name].as<T>();
+	}
+	else
+	{
+		return config.get<T>(name);
+	}
+}
+
 int main(int argc, char * argv[])
 {
-	boost::asio::io_service io;
+	Configuration config;
 
-	std::string device_name = "COM4";
-	unsigned int baud_rate = 9600;
-
+	// parse command line options and commands
 	po::variables_map vm;
+	Command cmd = parseCommands(vm, argc, argv);
 
-	Command cmd = parserCommands(vm, argc, argv);
+	try
+	{
+		// load config file either from command line option or default
+		if (vm.count("config") == 1)
+			config.loadConfigFile(vm["config"].as<std::string>());
+		else
+			config.loadDefaultConfigFile();
+	}
+	catch (std::runtime_error& err)
+	{
+		std::cerr << err.what() << std::endl;
+		return 1;
+	}
 
+	std::string device_name = getOption<std::string>("port", config, vm);
+	unsigned int baud_rate  = getOption<unsigned int>("baud", config, vm);
+
+	boost::asio::io_service io;
 	Protocol<Serial> comm(io, device_name, baud_rate);
 
 	boost::apply_visitor(CommandVisitor<Protocol<Serial>>(comm), cmd);
@@ -84,7 +113,7 @@ int main(int argc, char * argv[])
     return 0;
 }
 
-Command parserCommands(po::variables_map& vm, int argc, char * argv[])
+Command parseCommands(po::variables_map& vm, int argc, char * argv[])
 {
 	// set global options
 	po::options_description global("Global Options");
@@ -92,7 +121,8 @@ Command parserCommands(po::variables_map& vm, int argc, char * argv[])
 		("command", po::value<std::string>(), "Command to run")
 		("subargs", po::value<std::vector<std::string>>(), "Arguments to command")
 		("port", po::value<std::string>(), "device name")
-		("baud", po::value<unsigned int>(), "baud rate");
+		("baud", po::value<unsigned int>(), "baud rate")
+		("config", po::value<std::string>(), "pclights configuration file");
 
 	po::positional_options_description pos;
 	pos
