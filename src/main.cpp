@@ -10,73 +10,64 @@
 #include <boost/program_options.hpp>
 #include <boost/variant.hpp>
 
+#include "protocol.h"
 #include "serial.h"
 
 namespace po = boost::program_options;
 
-void delay(unsigned int ms)
-{
-	std::this_thread::sleep_for(std::chrono::milliseconds(ms));
-}
-
-void setColor(Serial& comm, uint8_t r, uint8_t g, uint8_t b)
-{
-	uint8_t data[] = { 'P', 'L', 0, 0, 3, r, g, b };
-	comm.write(data, 8);
-}
-
-void clear(Serial& comm)
-{
-	setColor(comm, 0, 0, 0);
-}
-
-void setPixel(Serial& comm, uint8_t pixel, uint8_t r, uint8_t g, uint8_t b)
-{
-	uint8_t data[] = { 'P', 'L', 1, 0, 4, pixel, r, g, b };
-	comm.write(data, 8);
-}
-
-void setLevel(Serial& comm, uint8_t level)
-{
-	uint8_t data[] = { 'P', 'L', 2, 0, 1, level };
-	comm.write(data, 6);
-}
-
-void setRLE(Serial& comm)
-{
-	uint8_t data[] = { 'P', 'L', 3, 0, 12, 5, 255, 0, 0, 5, 0, 255, 0, 5, 0, 0, 255 };
-	comm.write(data, 17);
-}
+/* Command line command structures */
 
 struct SetColorCommand
 {
 	unsigned int r, g, b;
 };
 
-using Command = boost::variant<SetColorCommand>;
+struct SetLevelCommand
+{
+	unsigned int level;
+};
 
+using Command = boost::variant<SetColorCommand, SetLevelCommand>;
+
+/* Visitor to use with boost::variant when parsing command line commands */
+
+template<typename ProtocolT>
 class CommandVisitor : public boost::static_visitor<void>
 {
 public:
-	CommandVisitor(Serial& serial) :
-		comm_(serial)
+	CommandVisitor(ProtocolT& protocol) :
+		comm_(protocol)
 	{
 	}
 
 	void operator()(const SetColorCommand& cmd) const
 	{
-		setColor(comm_, cmd.r, cmd.g, cmd.b);
+		comm_.setColor(cmd.r, cmd.g, cmd.b);
+	}
+
+	void operator()(const SetLevelCommand& cmd) const
+	{
+		comm_.setLevel(cmd.level);
 	}
 
 private:
-	Serial& comm_;
+	ProtocolT& comm_;
 };
 
+/**
+	Parse command line for commands and arguments
+*/
 Command parserCommands(po::variables_map& vm, int argc, char * argv[]);
+
+void parseCommandArguments(
+	po::parsed_options& parsed,
+	po::options_description& command_desc,
+	po::positional_options_description& command_pos,
+	po::variables_map& vm
+);
 
 int main(int argc, char * argv[])
 {
-
 	boost::asio::io_service io;
 
 	std::string device_name = "COM4";
@@ -86,8 +77,9 @@ int main(int argc, char * argv[])
 
 	Command cmd = parserCommands(vm, argc, argv);
 
-	Serial comm(io, device_name, baud_rate);
-	boost::apply_visitor(CommandVisitor(comm), cmd);
+	Protocol<Serial> comm(io, device_name, baud_rate);
+
+	boost::apply_visitor(CommandVisitor<Protocol<Serial>>(comm), cmd);
 
     return 0;
 }
@@ -124,33 +116,78 @@ Command parserCommands(po::variables_map& vm, int argc, char * argv[])
 		po::options_description setcolor_desc("Options for setcolor command");
 		setcolor_desc.add_options()
 			("color", "color to set light strip");
-		
-		// collect unrecognized options from the first pass
-		std::vector<std::string> opts = po::collect_unrecognized(parsed.options, po::include_positional);
-		// command will be include so remove
-		opts.erase(opts.begin());
-
 		po::positional_options_description pos_setcolor;
 		pos_setcolor.add("color", 1);
 
-		// parse again
-		po::store(po::command_line_parser(opts)
-			.options(setcolor_desc)
-			.positional(pos_setcolor)
-			.run(), 
-			vm
-		);
+		parseCommandArguments(parsed, setcolor_desc, pos_setcolor, vm);
 
 		std::string color = vm["color"].as<std::string>();
-
 		std::stringstream ss;
 		ss << color;
-
 		SetColorCommand args;
 		ss >> args.r >> args.g >> args.b;
 
 		return args;
 	}
+	else if (cmd == "level")
+	{
+		po::options_description setlevel_desc("Options for setcolor command");
+		setlevel_desc.add_options()
+			("level", "adjust overall brightness level (0  - 100)%");
+		po::positional_options_description setlevel_pos;
+		setlevel_pos.add("level", 1);
+
+		parseCommandArguments(parsed, setlevel_desc, setlevel_pos, vm);
+
+		// get a scaling value from percent
+		float scale = std::stof(vm["level"].as<std::string>()) / 100.0f;
+
+		if (scale > 1) scale = 1;
+		if (scale < 0) scale = 0;
+
+		SetLevelCommand cmd;
+		cmd.level = (unsigned int)(255.0f * scale);
+
+		return cmd;
+	}
+	else if (cmd == "off")
+	{
+		SetColorCommand cmd;
+		cmd.r = 0;
+		cmd.g = 0;
+		cmd.b = 0;
+
+		return cmd;
+	}
+	else if (cmd == "on")
+	{
+		SetColorCommand cmd;
+		cmd.r = 255;
+		cmd.g = 255;
+		cmd.b = 255;
+
+		return cmd;
+	}
 
 	throw po::invalid_option_value(cmd);
+}
+
+void parseCommandArguments(
+	po::parsed_options& parsed,
+	po::options_description& command_desc,
+	po::positional_options_description& command_pos,
+	po::variables_map& vm)
+{
+	// collect unrecognized options from the first pass
+	std::vector<std::string> opts = po::collect_unrecognized(parsed.options, po::include_positional);
+	// command will be include so remove
+	opts.erase(opts.begin());
+
+	// parse again
+	po::store(po::command_line_parser(opts)
+		.options(command_desc)
+		.positional(command_pos)
+		.run(),
+		vm
+	);
 }
