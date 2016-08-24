@@ -49,6 +49,7 @@ static Adafruit_NeoPixel pixels(NUM_PIXELS, PIN, NEO_GRB + NEO_KHZ800);
 void setup()
 {
     Serial.begin(9600);
+    Serial.setTimeout(1000);
 
     pixels.begin();
     pixels.clear();
@@ -132,7 +133,7 @@ void setRLE(unsigned int payload_length)
     // [run length, R, G, B]
 
     unsigned int num_runs = payload_length / 4;
-    unsigned int pixel = 1;
+    unsigned int pixel = 0;
 
     for(unsigned int i = 0; i < num_runs; ++i)
     {

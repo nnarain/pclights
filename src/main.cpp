@@ -13,6 +13,7 @@
 #include "protocol.h"
 #include "serial.h"
 #include "configuration.h"
+#include "animation.h"
 
 namespace po = boost::program_options;
 
@@ -28,7 +29,13 @@ struct SetLevelCommand
 	unsigned int level;
 };
 
-using Command = boost::variant<SetColorCommand, SetLevelCommand>;
+struct PlayCommand
+{
+	std::string animation_name;
+};
+
+using Command = boost::variant<SetColorCommand, SetLevelCommand, PlayCommand>;
+using MyProtocol = Protocol<Serial>;
 
 /* Visitor to use with boost::variant when parsing command line commands */
 
@@ -36,8 +43,9 @@ template<typename ProtocolT>
 class CommandVisitor : public boost::static_visitor<void>
 {
 public:
-	CommandVisitor(ProtocolT& protocol) :
-		comm_(protocol)
+	CommandVisitor(ProtocolT& protocol, Configuration& config) :
+		comm_(protocol),
+		config_(config)
 	{
 	}
 
@@ -51,8 +59,22 @@ public:
 		comm_.setLevel(cmd.level);
 	}
 
+	void operator()(const PlayCommand& cmd) const
+	{
+		std::string base = "animations." + cmd.animation_name;
+		std::string file_key       = base + ".file";
+		std::string frame_rate_key = base + ".frame_rate";
+
+		std::string file = config_.get<std::string>(file_key);
+		float frame_rate = config_.get<float>(frame_rate_key);
+
+		Animation<MyProtocol> animation(comm_, file, frame_rate);
+		animation.play();
+	}
+
 private:
 	ProtocolT& comm_;
+	Configuration& config_;
 };
 
 /**
@@ -106,9 +128,9 @@ int main(int argc, char * argv[])
 	unsigned int baud_rate  = getOption<unsigned int>("baud", config, vm);
 
 	boost::asio::io_service io;
-	Protocol<Serial> comm(io, device_name, baud_rate);
+	MyProtocol comm(io, device_name, baud_rate);
 
-	boost::apply_visitor(CommandVisitor<Protocol<Serial>>(comm), cmd);
+	boost::apply_visitor(CommandVisitor<MyProtocol>(comm, config), cmd);
 
     return 0;
 }
@@ -195,6 +217,21 @@ Command parseCommands(po::variables_map& vm, int argc, char * argv[])
 		cmd.r = 255;
 		cmd.g = 255;
 		cmd.b = 255;
+
+		return cmd;
+	}
+	else if (cmd == "play")
+	{
+		po::options_description play_desc("Options for play command");
+		play_desc.add_options()
+			("name", "Animation name");
+		po::positional_options_description play_pos;
+		play_pos.add("name", 1);
+
+		parseCommandArguments(parsed, play_desc, play_pos, vm);
+
+		PlayCommand cmd;
+		cmd.animation_name = vm["name"].as<std::string>();
 
 		return cmd;
 	}
