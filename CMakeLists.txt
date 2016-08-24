@@ -15,12 +15,10 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 find_package(Boost COMPONENTS system filesystem program_options REQUIRED)
-find_package(PNG REQUIRED)
 
 include_directories(
     include/
 	${Boost_INCLUDE_DIR}
-	${PNG_INCLUDE_DIRS}
 )
 
 set(HEADERS
@@ -40,7 +38,6 @@ add_executable(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
 	${Boost_LIBRARIES}
-	${PNG_LIBRARIES}
 )
 
 if(WIN32)
