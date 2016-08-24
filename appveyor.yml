@@ -15,7 +15,7 @@ before_build:
     - echo "Generating Visual Studio Solution..."
     - cd c:\projects\pclights
     - mkdir build && cd build
-    - cmake ..
+    - cmake .. -DBoost_USE_STATIC_LIBS=ON -DBoost_USE_MULTITHREADED=ON
 
 build:
   project: c:\projects\pclights\build\pclights.sln
