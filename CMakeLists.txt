@@ -15,32 +15,39 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 find_package(Boost COMPONENTS system filesystem program_options REQUIRED)
+find_package(PNG REQUIRED)
 
 include_directories(
     include/
 	${Boost_INCLUDE_DIR}
+	${PNG_INCLUDE_DIRS}
 )
 
 set(HEADERS
 	include/serial.h
 	include/configuration.h
 	include/protocol.h
+	include/animation.h
+	include/lodepng.h
 )
 add_executable(${PROJECT_NAME}
     src/main.cpp
 	src/serial.cpp
 	src/configuration.cpp
+	src/lodepng.cpp
 	${HEADERS}
 )
 
 target_link_libraries(${PROJECT_NAME}
 	${Boost_LIBRARIES}
+	${PNG_LIBRARIES}
 )
 
 if(WIN32)
 	add_definitions(
 		-DBOOST_ALL_NO_LIB # disable auto linking
 		-D_WIN32_WINNT=0x0501
+		-D_CRT_SECURE_NO_WARNINGS
 	)
 	target_link_libraries(${PROJECT_NAME}
 		ws2_32
