@@ -28,11 +28,13 @@ set(HEADERS
 	include/configuration.h
 	include/protocol.h
 	include/animation.h
+	include/lodepng.h
 )
 add_executable(${PROJECT_NAME}
     src/main.cpp
 	src/serial.cpp
 	src/configuration.cpp
+	src/lodepng.cpp
 	${HEADERS}
 )
 

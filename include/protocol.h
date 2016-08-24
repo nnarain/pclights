@@ -36,7 +36,7 @@ public:
 	{
 		uint8_t header[] = { 'P', 'L', 3, (uint8_t)(length >> 8), (uint8_t)(length & 0x00FF) };
 
-		link_.write(header, 5);
+		link_.write(header, sizeof(header));
 		link_.write(payload, length);
 	}
 

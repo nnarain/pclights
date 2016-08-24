@@ -12,15 +12,15 @@ public:
 
     SerialStream& operator>>(uint8_t& b)
     {
-        b = buffer_[read_idx_++];
+        b = (uint8_t)buffer_[read_idx_++];
         return *this;
     }
 
     SerialStream& operator>>(uint16_t& v)
     {
         v = 0;
-        v |= ((buffer_[read_idx_++] & 0xFFFF) << 8);
-        v |= (buffer_[read_idx_++] & 0xFFFF);
+        v |= (((uint8_t)buffer_[read_idx_++] & 0xFFFF) << 8);
+        v |= ((uint8_t)buffer_[read_idx_++] & 0xFFFF);
 
         return *this;
     }
