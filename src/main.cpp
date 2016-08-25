@@ -61,7 +61,7 @@ public:
 
 	void operator()(const PlayCommand& cmd) const
 	{
-		std::string base = "animations." + cmd.animation_name;
+		std::string base           = "animations." + cmd.animation_name;
 		std::string file_key       = base + ".file";
 		std::string frame_rate_key = base + ".frame_rate";
 
@@ -117,20 +117,20 @@ int main(int argc, char * argv[])
 			config.loadConfigFile(vm["config"].as<std::string>());
 		else
 			config.loadDefaultConfigFile();
+
+		std::string device_name = getOption<std::string>("port", config, vm);
+		unsigned int baud_rate = getOption<unsigned int>("baud", config, vm);
+
+		boost::asio::io_service io;
+		MyProtocol comm(io, device_name, baud_rate);
+
+		boost::apply_visitor(CommandVisitor<MyProtocol>(comm, config), cmd);
 	}
 	catch (std::runtime_error& err)
 	{
 		std::cerr << err.what() << std::endl;
 		return 1;
 	}
-
-	std::string device_name = getOption<std::string>("port", config, vm);
-	unsigned int baud_rate  = getOption<unsigned int>("baud", config, vm);
-
-	boost::asio::io_service io;
-	MyProtocol comm(io, device_name, baud_rate);
-
-	boost::apply_visitor(CommandVisitor<MyProtocol>(comm, config), cmd);
 
     return 0;
 }
